@@ -92,7 +92,7 @@ Then enable Web Search via UI: **AI & ML → Agents → Settings (gear icon) →
 ### Folder Structure
 
 ```
-setup/
+hol_scripts/
 ├── 01_database/              # Create database, schemas, warehouse
 ├── 02_raw_tables/            # Create 9 source tables
 ├── 03_data_generation/       # Generate all synthetic data (pure SQL)
@@ -109,7 +109,7 @@ setup/
 
 ### Step 1: Database Setup
 
-📁 **File**: `setup/01_database/01_create_database.sql`
+📁 **File**: `hol_scripts/01_database/01_create_database.sql`
 
 Creates the WYZE_COMP_ANALYSIS database with RAW and FINAL schemas, plus the WYZE_COMP_WH warehouse.
 
@@ -119,7 +119,7 @@ Creates the WYZE_COMP_ANALYSIS database with RAW and FINAL schemas, plus the WYZ
 
 ### Step 2: Create Raw Tables
 
-📁 **File**: `setup/02_raw_tables/01_create_tables.sql`
+📁 **File**: `hol_scripts/02_raw_tables/01_create_tables.sql`
 
 Creates 9 source tables:
 - `BRANDS`, `SUBCATEGORIES`, `SEGMENTS`, `PRODUCTS`
@@ -136,13 +136,13 @@ Run these scripts **in order** (later scripts depend on earlier data):
 
 📁 **Files**:
 ```
-setup/03_data_generation/01_insert_brands.sql
-setup/03_data_generation/02_insert_subcategories_segments.sql
-setup/03_data_generation/03_insert_products.sql
-setup/03_data_generation/04_insert_sales.sql
-setup/03_data_generation/05_insert_traffic.sql
-setup/03_data_generation/06_insert_promotions.sql
-setup/03_data_generation/07_insert_channel_data.sql
+hol_scripts/03_data_generation/01_insert_brands.sql
+hol_scripts/03_data_generation/02_insert_subcategories_segments.sql
+hol_scripts/03_data_generation/03_insert_products.sql
+hol_scripts/03_data_generation/04_insert_sales.sql
+hol_scripts/03_data_generation/05_insert_traffic.sql
+hol_scripts/03_data_generation/06_insert_promotions.sql
+hol_scripts/03_data_generation/07_insert_channel_data.sql
 ```
 
 **Verify:**
@@ -161,7 +161,7 @@ UNION ALL SELECT 'ATLAS_PROMOTIONS', COUNT(*) FROM WYZE_COMP_ANALYSIS.RAW.ATLAS_
 #### 4a: Generate Review Files
 
 ```bash
-cd path/to/Wyze_CoCo_HOL/scripts/
+cd path/to/Wyze_CoCo_HOL/unstructured_data_generation_script/
 python generate_product_reviews.py
 ```
 
@@ -171,7 +171,7 @@ Creates ~110 `.txt` files in `unstructured_data/product_reviews/`.
 
 #### 4b: Create Stage
 
-📁 **File**: `setup/04_product_reviews/01_create_stage.sql`
+📁 **File**: `hol_scripts/04_product_reviews/01_create_stage.sql`
 
 #### 4c: Upload Files via Snowsight
 
@@ -190,8 +190,8 @@ SELECT COUNT(*) FROM DIRECTORY(@WYZE_COMP_ANALYSIS.RAW.PRODUCT_REVIEWS_STAGE);
 
 📁 **Files**:
 ```
-setup/04_product_reviews/02_create_source_table.sql
-setup/04_product_reviews/03_create_search_service.sql
+hol_scripts/04_product_reviews/02_create_source_table.sql
+hol_scripts/04_product_reviews/03_create_search_service.sql
 ```
 
 Creates `PRODUCT_REVIEW_SOURCE` table and `PRODUCT_REVIEW_SEARCH` Cortex Search service.
@@ -202,8 +202,8 @@ Creates `PRODUCT_REVIEW_SOURCE` table and `PRODUCT_REVIEW_SEARCH` Cortex Search 
 
 📁 **Files**:
 ```
-setup/05_final_schema/01_create_sales_enriched_dt.sql
-setup/05_final_schema/02_create_promo_enriched_dt.sql
+hol_scripts/05_final_schema/01_create_sales_enriched_dt.sql
+hol_scripts/05_final_schema/02_create_promo_enriched_dt.sql
 ```
 
 Creates dynamic tables that denormalize RAW data:
@@ -216,7 +216,7 @@ Creates dynamic tables that denormalize RAW data:
 
 Uses Snowflake Cortex AI SQL functions to extract structured insights from unstructured review text.
 
-📁 **File**: `setup/06_ai_analysis/01_create_review_sentiment.sql`
+📁 **File**: `hol_scripts/06_ai_analysis/01_create_review_sentiment.sql`
 
 > **Note**: AI_SENTIMENT takes ~30 seconds, CORTEX.COMPLETE takes ~2-3 minutes. Be patient.
 
@@ -240,7 +240,7 @@ SNOWFLAKE.CORTEX.COMPLETE('mistral-large2', 'prompt: ' || LEFT(CONTENT, 3000)) A
 
 ### Step 7: Semantic View
 
-📁 **File**: `setup/07_semantic_view/01_create_semantic_view.sql`
+📁 **File**: `hol_scripts/07_semantic_view/01_create_semantic_view.sql`
 
 Creates a Semantic View covering 10 tables (including `BRAND_REVIEW_SENTIMENT` and `SEGMENT_REVIEW_SENTIMENT` from Step 6, plus `SUBCATEGORIES` and `SEGMENTS` reference tables) for Cortex Analyst natural language queries.
 
@@ -257,13 +257,13 @@ Creates a Semantic View covering 10 tables (including `BRAND_REVIEW_SENTIMENT` a
 
 > One-time account-level setting requiring ACCOUNTADMIN.
 
-📁 **File**: `setup/08_agent/01_enable_web_search.sql`
+📁 **File**: `hol_scripts/08_agent/01_enable_web_search.sql`
 
 #### 8b: Create Snowflake Intelligence Database
 
 The `SNOWFLAKE_INTELLIGENCE` database is **not** automatically created. You must create it before creating agents.
 
-📁 **File**: `setup/08_agent/02_create_agent_schema.sql`
+📁 **File**: `hol_scripts/08_agent/02_create_agent_schema.sql`
 
 ```sql
 USE ROLE ACCOUNTADMIN;
@@ -280,7 +280,7 @@ ACCOUNTADMIN already has the necessary privileges to create agents.
 
 #### 8c: Create Agent
 
-📁 **File**: `setup/08_agent/03_create_agent.sql`
+📁 **File**: `hol_scripts/08_agent/03_create_agent.sql`
 
 ```sql
 USE ROLE ACCOUNTADMIN;
@@ -315,7 +315,7 @@ $$;
 
 ### Step 9: Permissions
 
-📁 **File**: `setup/09_grants/01_grant_permissions.sql`
+📁 **File**: `hol_scripts/09_grants/01_grant_permissions.sql`
 
 Grants all objects to PUBLIC for HOL simplicity (database, schemas, tables, dynamic tables, search service, semantic view, warehouse, agent).
 
@@ -619,7 +619,7 @@ SELECT COUNT(*) FROM WYZE_COMP_ANALYSIS.RAW.PRODUCT_REVIEW_SOURCE;
 
 ## Teardown / Cleanup
 
-📁 **File**: `setup/99_teardown/01_teardown.sql`
+📁 **File**: `hol_scripts/99_teardown/01_teardown.sql`
 
 ```sql
 USE ROLE ACCOUNTADMIN;
