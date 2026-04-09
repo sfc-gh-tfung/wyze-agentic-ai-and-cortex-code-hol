@@ -1,0 +1,37 @@
+-- ============================================================
+-- Step 4b: Create Source Table from Review Files
+-- ============================================================
+-- Filename format: BrandName_ProductSegment_YYYY-MM-DD.txt
+
+USE ROLE ACCOUNTADMIN;
+USE WAREHOUSE WYZE_COMP_WH;
+
+CREATE OR REPLACE FILE FORMAT WYZE_COMP_ANALYSIS.RAW.TEXT_FORMAT
+    TYPE = 'CSV'
+    FIELD_DELIMITER = NONE
+    RECORD_DELIMITER = NONE;
+
+CREATE OR REPLACE TABLE WYZE_COMP_ANALYSIS.RAW.PRODUCT_REVIEW_SOURCE AS
+SELECT
+    METADATA$FILENAME AS FILE_NAME,
+    REPLACE(
+        SPLIT_PART(METADATA$FILENAME, '_', 1),
+        '-', ' '
+    ) AS BRAND_NAME,
+    REPLACE(
+        REGEXP_REPLACE(
+            REGEXP_REPLACE(METADATA$FILENAME, '_\\d{4}-\\d{2}-\\d{2}\\.txt$', ''),
+            '^[^_]+_', ''
+        ),
+        '_', ' '
+    ) AS PRODUCT_SEGMENT,
+    TRY_TO_DATE(
+        REGEXP_SUBSTR(METADATA$FILENAME, '\\d{4}-\\d{2}-\\d{2}'),
+        'YYYY-MM-DD'
+    ) AS REVIEW_DATE,
+    $1::VARCHAR AS CONTENT
+FROM @WYZE_COMP_ANALYSIS.RAW.PRODUCT_REVIEWS_STAGE
+    (FILE_FORMAT => 'WYZE_COMP_ANALYSIS.RAW.TEXT_FORMAT', PATTERN => '.*\.txt');
+
+SELECT COUNT(*) AS total_reviews FROM WYZE_COMP_ANALYSIS.RAW.PRODUCT_REVIEW_SOURCE;
+SELECT FILE_NAME, BRAND_NAME, PRODUCT_SEGMENT, REVIEW_DATE FROM WYZE_COMP_ANALYSIS.RAW.PRODUCT_REVIEW_SOURCE LIMIT 5;
