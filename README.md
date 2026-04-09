@@ -78,7 +78,7 @@ This guide covers the full setup of the Wyze Competitive Analysis demo environme
 
 ```sql
 USE ROLE ACCOUNTADMIN;
-ALTER ACCOUNT SET CORTEX_ENABLED_CROSS_REGION = 'AWS_US';
+ALTER ACCOUNT SET CORTEX_ENABLED_CROSS_REGION = 'ANY_REGION';
 
 
 ```
@@ -500,39 +500,47 @@ Using @WYZE_COMP_ANALYSIS.FINAL.SALES_ENRICHED, write a SQL analysis that:
 
 ## Sample Questions
 
-### Sales & Revenue
-- Which SKUs had the fastest-growing sales over the past 4 weeks?
-- What are total sales and units sold, broken down by brand and subcategory?
-- How has ASP trended over the past 12 weeks?
+### Sales Performance
+- Which SKUs had the fastest-growing sales over the past 4 weeks? Which ones are declining?
+- What are the total sales and units sold this month, broken down by brand and subcategory?
+- How has average selling price (ASP) trended over the past 12 weeks, and which SKUs show the highest price volatility?
 
-### Channel Mix
-- What is the current 1P vs 3P split, and how has it shifted?
-- Which segments have an unusually high 3P share?
+### 1P vs. 3P Channel Mix
+- What is our current 1P vs 3P sales split, and how has it shifted compared to 4 weeks ago?
+- Which categories or segments have an unusually high 3P share — and is there a channel cannibalization risk?
 
 ### Traffic & Advertising
-- Which search terms drive the most organic traffic?
-- Which SKUs are seeing declining organic traffic?
+- Which search terms are driving the most organic traffic? Which terms are almost entirely paid-dependent?
+- For SKUs with the highest ad spend, how does ROAS look (sales generated vs. dollars spent)?
+- Which SKUs are seeing declining organic traffic and may need increased paid support?
 
-### Promotions
-- How much do coupon promotions lift sales and unit volume on average?
-- Are promotions compressing ASP?
+### Promotion Effectiveness
+- On average, how much do coupon promotions lift sales and unit volume?
+- Which SKUs see the biggest incremental sales lift during promotions — and which promotions show little to no effect?
+- Are promotions compressing ASP, and does pricing recover after the promotion ends?
 
 ### Content Quality
-- Which SKUs have content scores below threshold?
-- Is there a correlation between content scores and review ratings?
+- Which SKUs have content scores (title, image, video, A+) below threshold levels that may be hurting conversion?
+- Is there a meaningful correlation between higher content scores and better review ratings or sales performance?
+
+### Competitive & Segment View
+- Within each segment, which competitor brands are growing faster than us — and is our market share expanding or contracting?
+- Which SKUs have high sales volume but low ratings (below 4.0 stars) — representing a customer satisfaction risk?
 
 ### Sentiment Analysis (AI SQL)
-- Which brands have the best customer sentiment?
+- Which brands have the best overall customer sentiment?
 - How does Wyze's sentiment compare to Ring and Arlo?
 - Which product segments have the most negative reviews?
 
 ### Product Reviews (Cortex Search)
 - What are customers saying about Ring doorbell cameras?
 - Are there common complaints about battery life across outdoor cameras?
+- What do reviews say about Wyze camera video quality compared to competitors?
 
 ### Web Search
 - What recent news is there about Ring's product launches?
 - What are the latest trends in the home security camera market?
+- Are any competitors running major promotions or price cuts right now?
 
 ---
 
