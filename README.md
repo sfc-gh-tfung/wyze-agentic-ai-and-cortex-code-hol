@@ -8,8 +8,9 @@ This guide covers the full setup of the Wyze Competitive Analysis demo environme
 
 1. [Overview](#overview)
 2. [Prerequisites](#prerequisites)
-3. [Part 1: Core Setup (Steps 1-9)](#part-1-core-setup-steps-1-9)
-4. [Part 2: Choose Your Own Adventure](#part-2-choose-your-own-adventure)
+3. [Part 1: Core Setup (Steps 1-10)](#part-1-core-setup-steps-1-10)
+4. [Step 10: Use Your Agent in Snowflake Intelligence](#step-10-use-your-agent-in-snowflake-intelligence)
+5. [Part 2: Choose Your Own Adventure](#part-2-choose-your-own-adventure)
 5. [Sample Questions](#sample-questions)
 6. [Data Summary](#data-summary)
 7. [Troubleshooting](#troubleshooting)
@@ -87,7 +88,7 @@ Then enable Web Search via UI: **AI & ML → Agents → Settings (gear icon) →
 
 ---
 
-## Part 1: Core Setup (Steps 1-9)
+## Part 1: Core Setup (Steps 1-10)
 
 ### Folder Structure
 
@@ -318,6 +319,33 @@ $$;
 📁 **File**: `hol_scripts/09_grants/01_grant_permissions.sql`
 
 Grants all objects to PUBLIC for HOL simplicity (database, schemas, tables, dynamic tables, search service, semantic view, warehouse, agent).
+
+---
+
+### Step 10: Use Your Agent in Snowflake Intelligence
+
+Now that everything is set up, let's take the agent for a spin.
+
+1. In Snowsight, navigate to **AI & ML → Snowflake Intelligence**
+2. You should see **Competitive Analysis Assistant** in the agent list
+3. Click on it to open a chat session
+4. Try asking a question:
+
+```
+Which brands had the highest total retail sales last month?
+```
+
+The agent will use its three tools to answer:
+- **Analyst** — converts natural language to SQL against the semantic view
+- **ReviewSearch** — searches product review text via Cortex Search
+- **WebSearch** — pulls live market intelligence from the web
+
+Try mixing tool types in a single conversation:
+```
+How does Wyze's sales trend compare to Ring over the last 12 weeks?
+What are customers saying about Wyze camera video quality?
+What recent news is there about Ring's product launches?
+```
 
 ---
 
