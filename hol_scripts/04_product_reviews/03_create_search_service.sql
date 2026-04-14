@@ -19,3 +19,9 @@ CREATE OR REPLACE CORTEX SEARCH SERVICE WYZE_COMP_ANALYSIS.FINAL.PRODUCT_REVIEW_
             CONTENT
         FROM WYZE_COMP_ANALYSIS.RAW.PRODUCT_REVIEW_SOURCE
     );
+
+-- ============================================================
+-- Verify
+-- ============================================================
+
+SHOW CORTEX SEARCH SERVICES IN SCHEMA WYZE_COMP_ANALYSIS.FINAL;

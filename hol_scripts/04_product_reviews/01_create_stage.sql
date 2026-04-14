@@ -16,7 +16,7 @@ SHOW STAGES LIKE 'PRODUCT_REVIEWS_STAGE' IN SCHEMA WYZE_COMP_ANALYSIS.RAW;
 -- ============================================================
 -- MANUAL STEP: Upload review files via Snowsight
 -- ============================================================
--- 1. Navigate to Data > Databases > WYZE_COMP_ANALYSIS > RAW > Stages
+-- 1. Navigate to Catalog > Database Explorer > WYZE_COMP_ANALYSIS > RAW > Stages
 -- 2. Click on PRODUCT_REVIEWS_STAGE
 -- 3. Click + Files > Select all .txt files from unstructured_data/product_reviews/
 -- 4. Click Upload

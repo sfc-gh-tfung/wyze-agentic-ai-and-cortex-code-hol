@@ -60,4 +60,18 @@ JOIN WYZE_COMP_ANALYSIS.RAW.BRANDS b ON pr.BRAND_ID = b.BRAND_ID
 LEFT JOIN WYZE_COMP_ANALYSIS.RAW.SUBCATEGORIES sc ON p.SUBCATEGORY_ID = sc.SUBCATEGORY_ID
 LEFT JOIN WYZE_COMP_ANALYSIS.RAW.SEGMENTS seg ON p.SEGMENT_ID = seg.SEGMENT_ID;
 
+-- ============================================================
+-- Verify
+-- ============================================================
+
 SELECT COUNT(*) AS total_rows FROM WYZE_COMP_ANALYSIS.FINAL.PROMO_ENRICHED;
+SELECT PROMO_TYPE, COUNT(*) AS CNT, ROUND(AVG(SALES_LIFT_PCT), 1) AS AVG_LIFT
+FROM WYZE_COMP_ANALYSIS.FINAL.PROMO_ENRICHED
+GROUP BY PROMO_TYPE ORDER BY CNT DESC;
+
+-- ============================================================
+-- Verify All Step 5 Dynamic Tables (run after both 05_final_schema scripts)
+-- ============================================================
+
+SELECT 'SALES_ENRICHED' AS TBL, COUNT(*) AS CNT FROM WYZE_COMP_ANALYSIS.FINAL.SALES_ENRICHED
+UNION ALL SELECT 'PROMO_ENRICHED', COUNT(*) FROM WYZE_COMP_ANALYSIS.FINAL.PROMO_ENRICHED;
