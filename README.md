@@ -120,12 +120,12 @@ SHOW SCHEMAS IN DATABASE WYZE_COMP_ANALYSIS;
 ```
 
 Expected result:
-| name |
-|------|
-| FINAL |
-| INFORMATION_SCHEMA |
-| PUBLIC |
-| RAW |
+| | created_on | name | is_default | is_current | database_name | owner |
+|---|------------|------|------------|------------|---------------|-------|
+| 1 | 2026-... | FINAL | N | N | WYZE_COMP_ANALYSIS | ACCOUNTADMIN |
+| 2 | 2026-... | INFORMATION_SCHEMA | N | N | WYZE_COMP_ANALYSIS | |
+| 3 | 2026-... | PUBLIC | N | N | WYZE_COMP_ANALYSIS | ACCOUNTADMIN |
+| 4 | 2026-... | RAW | N | N | WYZE_COMP_ANALYSIS | ACCOUNTADMIN |
 
 ---
 
@@ -143,18 +143,20 @@ Creates 9 source tables:
 SHOW TABLES IN SCHEMA WYZE_COMP_ANALYSIS.RAW;
 ```
 
-Expected result:
-| name |
-|------|
-| ATLAS_CHANNEL_CATEGORY |
-| ATLAS_CHANNEL_SEGMENT |
-| ATLAS_PROMOTIONS |
-| ATLAS_SALES |
-| ATLAS_TRAFFIC |
-| BRANDS |
-| PRODUCTS |
-| SEGMENTS |
-| SUBCATEGORIES |
+Expected result (9 rows):
+| | name | database_name | schema_name | kind | rows |
+|---|------|---------------|-------------|------|------|
+| 1 | ATLAS_CHANNEL_CATEGORY | WYZE_COMP_ANALYSIS | RAW | TABLE | 0 |
+| 2 | ATLAS_CHANNEL_SEGMENT | WYZE_COMP_ANALYSIS | RAW | TABLE | 0 |
+| 3 | ATLAS_PROMOTIONS | WYZE_COMP_ANALYSIS | RAW | TABLE | 0 |
+| 4 | ATLAS_SALES | WYZE_COMP_ANALYSIS | RAW | TABLE | 0 |
+| 5 | ATLAS_TRAFFIC | WYZE_COMP_ANALYSIS | RAW | TABLE | 0 |
+| 6 | BRANDS | WYZE_COMP_ANALYSIS | RAW | TABLE | 0 |
+| 7 | PRODUCTS | WYZE_COMP_ANALYSIS | RAW | TABLE | 0 |
+| 8 | SEGMENTS | WYZE_COMP_ANALYSIS | RAW | TABLE | 0 |
+| 9 | SUBCATEGORIES | WYZE_COMP_ANALYSIS | RAW | TABLE | 0 |
+
+> **Note**: Rows will show 0 until Step 3 populates the data.
 
 ---
 
@@ -183,13 +185,13 @@ UNION ALL SELECT 'ATLAS_PROMOTIONS', COUNT(*) FROM WYZE_COMP_ANALYSIS.RAW.ATLAS_
 ```
 
 Expected result:
-| TBL | CNT |
-|-----|-----|
-| BRANDS | 26 |
-| PRODUCTS | 258 |
-| ATLAS_SALES | 2,773 |
-| ATLAS_TRAFFIC | 4,659 |
-| ATLAS_PROMOTIONS | 1,536 |
+| | TBL | CNT |
+|---|-----|-----|
+| 1 | BRANDS | 26 |
+| 2 | PRODUCTS | 258 |
+| 3 | ATLAS_SALES | 2773 |
+| 4 | ATLAS_TRAFFIC | 4659 |
+| 5 | ATLAS_PROMOTIONS | 1536 |
 
 ---
 
@@ -223,9 +225,9 @@ SELECT COUNT(*) FROM DIRECTORY(@WYZE_COMP_ANALYSIS.RAW.PRODUCT_REVIEWS_STAGE);
 ```
 
 Expected result:
-| COUNT(*) |
-|----------|
-| 110 |
+| | COUNT(*) |
+|---|----------|
+| 1 | 110 |
 
 #### 4d: Create Source Table & Search Service
 
@@ -244,14 +246,14 @@ SHOW CORTEX SEARCH SERVICES IN SCHEMA WYZE_COMP_ANALYSIS.FINAL;
 ```
 
 Expected result for `SELECT COUNT(*)`:
-| COUNT(*) |
-|----------|
-| 110 |
+| | COUNT(*) |
+|---|----------|
+| 1 | 110 |
 
 Expected result for `SHOW CORTEX SEARCH SERVICES`:
-| name | indexing_state | source_data_num_rows |
-|------|----------------|----------------------|
-| PRODUCT_REVIEW_SEARCH | ACTIVE | 110 |
+| | name | database_name | schema_name | target_lag | warehouse | indexing_state | source_data_num_rows |
+|---|------|---------------|-------------|------------|-----------|----------------|----------------------|
+| 1 | PRODUCT_REVIEW_SEARCH | WYZE_COMP_ANALYSIS | FINAL | 1 day | WYZE_COMP_WH | ACTIVE | 110 |
 
 ---
 
@@ -274,10 +276,10 @@ UNION ALL SELECT 'PROMO_ENRICHED', COUNT(*) FROM WYZE_COMP_ANALYSIS.FINAL.PROMO_
 ```
 
 Expected result:
-| TBL | CNT |
-|-----|-----|
-| SALES_ENRICHED | 2,773 |
-| PROMO_ENRICHED | 1,536 |
+| | TBL | CNT |
+|---|-----|-----|
+| 1 | SALES_ENRICHED | 2773 |
+| 2 | PROMO_ENRICHED | 1536 |
 
 > **Note**: Dynamic tables may take a moment to initialize. If counts are 0, run: `ALTER DYNAMIC TABLE WYZE_COMP_ANALYSIS.FINAL.SALES_ENRICHED REFRESH;`
 
@@ -316,12 +318,12 @@ UNION ALL SELECT 'SEGMENT_REVIEW_SENTIMENT', COUNT(*) FROM WYZE_COMP_ANALYSIS.FI
 ```
 
 Expected result:
-| TBL | CNT |
-|-----|-----|
-| REVIEW_SENTIMENT | 110 |
-| REVIEW_THEMES | 110 |
-| BRAND_REVIEW_SENTIMENT | 15 |
-| SEGMENT_REVIEW_SENTIMENT | 56 |
+| | TBL | CNT |
+|---|-----|-----|
+| 1 | REVIEW_SENTIMENT | 110 |
+| 2 | REVIEW_THEMES | 110 |
+| 3 | BRAND_REVIEW_SENTIMENT | 15 |
+| 4 | SEGMENT_REVIEW_SENTIMENT | 56 |
 
 ---
 
@@ -337,9 +339,9 @@ SHOW SEMANTIC VIEWS IN SCHEMA WYZE_COMP_ANALYSIS.FINAL;
 ```
 
 Expected result:
-| name |
-|------|
-| COMP_ANALYSIS_SEMANTIC_VIEW |
+| | name | database_name | schema_name | owner |
+|---|------|---------------|-------------|-------|
+| 1 | COMP_ANALYSIS_SEMANTIC_VIEW | WYZE_COMP_ANALYSIS | FINAL | ACCOUNTADMIN |
 
 ---
 
@@ -407,9 +409,9 @@ SHOW AGENTS IN SCHEMA SNOWFLAKE_INTELLIGENCE.AGENTS;
 ```
 
 Expected result:
-| name | profile |
-|------|---------|
-| COMP_ANALYSIS_AGENT | {"display_name": "Competitive Analysis Assistant", "color": "green"} |
+| | name | database_name | schema_name | owner | profile |
+|---|------|---------------|-------------|-------|---------|
+| 1 | COMP_ANALYSIS_AGENT | SNOWFLAKE_INTELLIGENCE | AGENTS | ACCOUNTADMIN | {"display_name": "Competitive Analysis Assistant", "color": "green"} |
 
 ---
 
