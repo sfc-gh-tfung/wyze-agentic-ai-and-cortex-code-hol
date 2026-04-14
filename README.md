@@ -114,7 +114,12 @@ hol_scripts/
 
 Creates the WYZE_COMP_ANALYSIS database with RAW and FINAL schemas, plus the WYZE_COMP_WH warehouse.
 
-**Verify:** `SHOW SCHEMAS IN DATABASE WYZE_COMP_ANALYSIS;`
+**Verify:**
+```sql
+SHOW SCHEMAS IN DATABASE WYZE_COMP_ANALYSIS;
+```
+
+Expected result: 4 schemas — `FINAL`, `INFORMATION_SCHEMA`, `PUBLIC`, `RAW`.
 
 ---
 
@@ -127,7 +132,12 @@ Creates 9 source tables:
 - `ATLAS_SALES`, `ATLAS_TRAFFIC`, `ATLAS_PROMOTIONS`
 - `ATLAS_CHANNEL_CATEGORY`, `ATLAS_CHANNEL_SEGMENT`
 
-**Verify:** `SHOW TABLES IN SCHEMA WYZE_COMP_ANALYSIS.RAW;`
+**Verify:**
+```sql
+SHOW TABLES IN SCHEMA WYZE_COMP_ANALYSIS.RAW;
+```
+
+Expected result: 9 tables — `ATLAS_CHANNEL_CATEGORY`, `ATLAS_CHANNEL_SEGMENT`, `ATLAS_PROMOTIONS`, `ATLAS_SALES`, `ATLAS_TRAFFIC`, `BRANDS`, `PRODUCTS`, `SEGMENTS`, `SUBCATEGORIES`.
 
 ---
 
@@ -154,6 +164,15 @@ UNION ALL SELECT 'ATLAS_SALES', COUNT(*) FROM WYZE_COMP_ANALYSIS.RAW.ATLAS_SALES
 UNION ALL SELECT 'ATLAS_TRAFFIC', COUNT(*) FROM WYZE_COMP_ANALYSIS.RAW.ATLAS_TRAFFIC
 UNION ALL SELECT 'ATLAS_PROMOTIONS', COUNT(*) FROM WYZE_COMP_ANALYSIS.RAW.ATLAS_PROMOTIONS;
 ```
+
+Expected result:
+| TBL | CNT |
+|-----|-----|
+| BRANDS | 26 |
+| PRODUCTS | 258 |
+| ATLAS_SALES | 2,773 |
+| ATLAS_TRAFFIC | 4,659 |
+| ATLAS_PROMOTIONS | 1,536 |
 
 ---
 
@@ -184,8 +203,9 @@ Then refresh:
 ```sql
 ALTER STAGE WYZE_COMP_ANALYSIS.RAW.PRODUCT_REVIEWS_STAGE REFRESH;
 SELECT COUNT(*) FROM DIRECTORY(@WYZE_COMP_ANALYSIS.RAW.PRODUCT_REVIEWS_STAGE);
--- Should return ~110
 ```
+
+Expected result: **110** files.
 
 #### 4d: Create Source Table & Search Service
 
@@ -196,6 +216,14 @@ hol_scripts/04_product_reviews/03_create_search_service.sql
 ```
 
 Creates `PRODUCT_REVIEW_SOURCE` table and `PRODUCT_REVIEW_SEARCH` Cortex Search service.
+
+**Verify:**
+```sql
+SELECT COUNT(*) FROM WYZE_COMP_ANALYSIS.RAW.PRODUCT_REVIEW_SOURCE;
+SHOW CORTEX SEARCH SERVICES IN SCHEMA WYZE_COMP_ANALYSIS.FINAL;
+```
+
+Expected result: **110** rows in `PRODUCT_REVIEW_SOURCE`. One search service `PRODUCT_REVIEW_SEARCH` with `indexing_state = ACTIVE`.
 
 ---
 
@@ -210,6 +238,20 @@ hol_scripts/05_final_schema/02_create_promo_enriched_dt.sql
 Creates dynamic tables that denormalize RAW data:
 - **SALES_ENRICHED** - Sales + products + brands with ASP, content quality tiers
 - **PROMO_ENRICHED** - Promotions + products with sales lift, ASP compression
+
+**Verify:**
+```sql
+SELECT 'SALES_ENRICHED' AS TBL, COUNT(*) AS CNT FROM WYZE_COMP_ANALYSIS.FINAL.SALES_ENRICHED
+UNION ALL SELECT 'PROMO_ENRICHED', COUNT(*) FROM WYZE_COMP_ANALYSIS.FINAL.PROMO_ENRICHED;
+```
+
+Expected result:
+| TBL | CNT |
+|-----|-----|
+| SALES_ENRICHED | 2,773 |
+| PROMO_ENRICHED | 1,536 |
+
+> **Note**: Dynamic tables may take a moment to initialize. If counts are 0, run: `ALTER DYNAMIC TABLE WYZE_COMP_ANALYSIS.FINAL.SALES_ENRICHED REFRESH;`
 
 ---
 
@@ -237,6 +279,22 @@ AI_SENTIMENT(CONTENT):categories[0]:sentiment::VARCHAR AS SENTIMENT_CATEGORY
 SNOWFLAKE.CORTEX.COMPLETE('mistral-large2', 'prompt: ' || LEFT(CONTENT, 3000)) AS THEME_EXTRACTION
 ```
 
+**Verify:**
+```sql
+SELECT 'REVIEW_SENTIMENT' AS TBL, COUNT(*) AS CNT FROM WYZE_COMP_ANALYSIS.RAW.REVIEW_SENTIMENT
+UNION ALL SELECT 'REVIEW_THEMES', COUNT(*) FROM WYZE_COMP_ANALYSIS.RAW.REVIEW_THEMES
+UNION ALL SELECT 'BRAND_REVIEW_SENTIMENT', COUNT(*) FROM WYZE_COMP_ANALYSIS.FINAL.BRAND_REVIEW_SENTIMENT
+UNION ALL SELECT 'SEGMENT_REVIEW_SENTIMENT', COUNT(*) FROM WYZE_COMP_ANALYSIS.FINAL.SEGMENT_REVIEW_SENTIMENT;
+```
+
+Expected result:
+| TBL | CNT |
+|-----|-----|
+| REVIEW_SENTIMENT | 110 |
+| REVIEW_THEMES | 110 |
+| BRAND_REVIEW_SENTIMENT | 15 |
+| SEGMENT_REVIEW_SENTIMENT | 56 |
+
 ---
 
 ### Step 7: Semantic View
@@ -245,7 +303,12 @@ SNOWFLAKE.CORTEX.COMPLETE('mistral-large2', 'prompt: ' || LEFT(CONTENT, 3000)) A
 
 Creates a Semantic View covering 10 tables (including `BRAND_REVIEW_SENTIMENT` and `SEGMENT_REVIEW_SENTIMENT` from Step 6, plus `SUBCATEGORIES` and `SEGMENTS` reference tables) for Cortex Analyst natural language queries.
 
-**Verify:** `SHOW SEMANTIC VIEWS IN SCHEMA WYZE_COMP_ANALYSIS.FINAL;`
+**Verify:**
+```sql
+SHOW SEMANTIC VIEWS IN SCHEMA WYZE_COMP_ANALYSIS.FINAL;
+```
+
+Expected result: One semantic view `COMP_ANALYSIS_SEMANTIC_VIEW`.
 
 ---
 
@@ -307,10 +370,12 @@ $$;
 
 > **Important**: Any role with `CREATE AGENT` on the schema can create agents. ACCOUNTADMIN has this by default.
 
-**Verify in Snowflake Intelligence:**
-1. Navigate to **AI & ML → Snowflake Intelligence**
-2. The **Competitive Analysis Assistant** should appear in the agent list
-3. Click to open and test with: *"Which brands have the best customer sentiment?"*
+**Verify:**
+```sql
+SHOW AGENTS IN SCHEMA SNOWFLAKE_INTELLIGENCE.AGENTS;
+```
+
+Expected result: `COMP_ANALYSIS_AGENT` with display name "Competitive Analysis Assistant".
 
 ---
 
