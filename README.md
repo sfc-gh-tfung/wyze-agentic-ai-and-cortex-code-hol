@@ -214,7 +214,7 @@ Creates ~110 `.txt` files in `unstructured_data/product_reviews/`.
 
 #### 4c: Upload Files via Snowsight
 
-1. Navigate to **Data → Databases → WYZE_COMP_ANALYSIS → RAW → Stages**
+1. Navigate to **Catalog → Database Explorer → WYZE_COMP_ANALYSIS → RAW → Stages**
 2. Click **PRODUCT_REVIEWS_STAGE**
 3. Click **+ Files** → select all `.txt` files → **Upload**
 
@@ -741,7 +741,7 @@ SELECT COUNT(*) FROM WYZE_COMP_ANALYSIS.RAW.PRODUCT_REVIEW_SOURCE;
 
 ### Product review upload issues
 - Ensure files are `.txt` format
-- Upload via Snowsight UI (Data → Databases → WYZE_COMP_ANALYSIS → RAW → Stages → PRODUCT_REVIEWS_STAGE)
+- Upload via Snowsight UI (Catalog → Database Explorer → WYZE_COMP_ANALYSIS → RAW → Stages → PRODUCT_REVIEWS_STAGE)
 - After upload: `ALTER STAGE WYZE_COMP_ANALYSIS.RAW.PRODUCT_REVIEWS_STAGE REFRESH;`
 
 ---
