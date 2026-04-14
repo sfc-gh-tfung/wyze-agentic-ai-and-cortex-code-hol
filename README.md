@@ -119,7 +119,13 @@ Creates the WYZE_COMP_ANALYSIS database with RAW and FINAL schemas, plus the WYZ
 SHOW SCHEMAS IN DATABASE WYZE_COMP_ANALYSIS;
 ```
 
-Expected result: 4 schemas — `FINAL`, `INFORMATION_SCHEMA`, `PUBLIC`, `RAW`.
+Expected result:
+| name |
+|------|
+| FINAL |
+| INFORMATION_SCHEMA |
+| PUBLIC |
+| RAW |
 
 ---
 
@@ -137,7 +143,18 @@ Creates 9 source tables:
 SHOW TABLES IN SCHEMA WYZE_COMP_ANALYSIS.RAW;
 ```
 
-Expected result: 9 tables — `ATLAS_CHANNEL_CATEGORY`, `ATLAS_CHANNEL_SEGMENT`, `ATLAS_PROMOTIONS`, `ATLAS_SALES`, `ATLAS_TRAFFIC`, `BRANDS`, `PRODUCTS`, `SEGMENTS`, `SUBCATEGORIES`.
+Expected result:
+| name |
+|------|
+| ATLAS_CHANNEL_CATEGORY |
+| ATLAS_CHANNEL_SEGMENT |
+| ATLAS_PROMOTIONS |
+| ATLAS_SALES |
+| ATLAS_TRAFFIC |
+| BRANDS |
+| PRODUCTS |
+| SEGMENTS |
+| SUBCATEGORIES |
 
 ---
 
@@ -205,7 +222,10 @@ ALTER STAGE WYZE_COMP_ANALYSIS.RAW.PRODUCT_REVIEWS_STAGE REFRESH;
 SELECT COUNT(*) FROM DIRECTORY(@WYZE_COMP_ANALYSIS.RAW.PRODUCT_REVIEWS_STAGE);
 ```
 
-Expected result: **110** files.
+Expected result:
+| COUNT(*) |
+|----------|
+| 110 |
 
 #### 4d: Create Source Table & Search Service
 
@@ -223,7 +243,15 @@ SELECT COUNT(*) FROM WYZE_COMP_ANALYSIS.RAW.PRODUCT_REVIEW_SOURCE;
 SHOW CORTEX SEARCH SERVICES IN SCHEMA WYZE_COMP_ANALYSIS.FINAL;
 ```
 
-Expected result: **110** rows in `PRODUCT_REVIEW_SOURCE`. One search service `PRODUCT_REVIEW_SEARCH` with `indexing_state = ACTIVE`.
+Expected result for `SELECT COUNT(*)`:
+| COUNT(*) |
+|----------|
+| 110 |
+
+Expected result for `SHOW CORTEX SEARCH SERVICES`:
+| name | indexing_state | source_data_num_rows |
+|------|----------------|----------------------|
+| PRODUCT_REVIEW_SEARCH | ACTIVE | 110 |
 
 ---
 
@@ -308,7 +336,10 @@ Creates a Semantic View covering 10 tables (including `BRAND_REVIEW_SENTIMENT` a
 SHOW SEMANTIC VIEWS IN SCHEMA WYZE_COMP_ANALYSIS.FINAL;
 ```
 
-Expected result: One semantic view `COMP_ANALYSIS_SEMANTIC_VIEW`.
+Expected result:
+| name |
+|------|
+| COMP_ANALYSIS_SEMANTIC_VIEW |
 
 ---
 
@@ -375,7 +406,10 @@ $$;
 SHOW AGENTS IN SCHEMA SNOWFLAKE_INTELLIGENCE.AGENTS;
 ```
 
-Expected result: `COMP_ANALYSIS_AGENT` with display name "Competitive Analysis Assistant".
+Expected result:
+| name | profile |
+|------|---------|
+| COMP_ANALYSIS_AGENT | {"display_name": "Competitive Analysis Assistant", "color": "green"} |
 
 ---
 
